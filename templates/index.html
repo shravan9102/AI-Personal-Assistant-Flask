@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Personal Assistant | AI/ML Project</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="navbar">
+
+        <div class="brand">
+            <div class="brand-icon">AI</div>
+
+            <div>
+                <h1>AI Personal Assistant</h1>
+                <span>Intelligent • Fast • Powered by Groq</span>
+            </div>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            AI Online
+        </div>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <main class="main-container">
+
+        <section class="hero">
+
+            <div class="hero-badge">
+                AI / ML PROJECT
+            </div>
+
+            <h2>
+                Your Intelligent
+                <span>Personal Assistant</span>
+            </h2>
+
+            <p>
+                Ask questions, analyze information and summarize emails
+                using a powerful Large Language Model.
+            </p>
+
+        </section>
+
+
+        <!-- ================= FEATURES ================= -->
+
+        <section class="features">
+
+            <!-- Ask AI -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="feature-icon ask-icon">
+                        ✦
+                    </div>
+
+                    <div>
+                        <h3>Ask Anything</h3>
+                        <p>Get intelligent AI-powered answers</p>
+                    </div>
+
+                </div>
+
+
+                <form id="askForm">
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="text"
+                            name="question"
+                            placeholder="Ask me anything..."
+                            autocomplete="off"
+                            required
+                        >
+
+                        <button type="submit">
+                            Ask AI
+                            <span>→</span>
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <div id="ans-loading"
+                     class="loading"
+                     style="display:none;">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                    <label>AI is thinking...</label>
+
+                </div>
+
+
+                <div id="answer"
+                     class="output"
+                     style="display:none;">
+                </div>
+
+            </div>
+
+
+            <!-- Email Summarizer -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="feature-icon email-icon">
+                        ✉
+                    </div>
+
+                    <div>
+                        <h3>Email Summarizer</h3>
+                        <p>Turn long emails into concise summaries</p>
+                    </div>
+
+                </div>
+
+
+                <form id="emailForm">
+
+                    <textarea
+                        name="email"
+                        placeholder="Paste your email content here..."
+                        required
+                    ></textarea>
+
+
+                    <div class="form-footer">
+
+                        <span class="helper-text">
+                            AI will summarize the email in 2–3 sentences.
+                        </span>
+
+                        <button type="submit">
+                            Summarize
+                            <span>→</span>
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <div id="summary-loading"
+                     class="loading"
+                     style="display:none;">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                    <label>Summarizing...</label>
+
+                </div>
+
+
+                <div id="summary"
+                     class="output"
+                     style="display:none;">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= TECH STACK ================= -->
+
+        <section class="tech-section">
+
+            <p class="tech-title">
+                TECHNOLOGIES USED
+            </p>
+
+            <div class="tech-stack">
+
+                <span>Python</span>
+                <span>Flask</span>
+                <span>Groq API</span>
+                <span>LLM</span>
+                <span>REST API</span>
+                <span>HTML5</span>
+                <span>CSS3</span>
+                <span>JavaScript</span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <footer>
+
+            <p>
+                Built as an AI/ML Engineering Project
+            </p>
+
+            <span>
+                Powered by Groq • Flask
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        // =========================================
+        // ASK ANYTHING
+        // =========================================
+
+        document.getElementById("askForm").onsubmit =
+            async (e) => {
+
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+
+                const loading =
+                    document.getElementById("ans-loading");
+
+                const answer =
+                    document.getElementById("answer");
+
+
+                loading.style.display = "flex";
+                answer.style.display = "none";
+                answer.innerHTML = "";
+
+
+                try {
+
+                    const response = await fetch("/ask", {
+                        method: "POST",
+                        body: formData
+                    });
+
+
+                    const data = await response.json();
+
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.error || "Something went wrong"
+                        );
+                    }
+
+
+                    answer.innerHTML =
+                        marked.parse(data.response);
+
+                    answer.style.display = "block";
+
+
+                } catch (error) {
+
+                    answer.innerHTML =
+                        `<div class="error">
+                            ⚠ ${error.message}
+                        </div>`;
+
+                    answer.style.display = "block";
+
+                } finally {
+
+                    loading.style.display = "none";
+
+                }
+
+            };
+
+
+        // =========================================
+        // EMAIL SUMMARIZER
+        // =========================================
+
+        document.getElementById("emailForm").onsubmit =
+            async (e) => {
+
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+
+                const loading =
+                    document.getElementById("summary-loading");
+
+                const summary =
+                    document.getElementById("summary");
+
+
+                loading.style.display = "flex";
+                summary.style.display = "none";
+                summary.innerHTML = "";
+
+
+                try {
+
+                    const response =
+                        await fetch("/summarize", {
+                            method: "POST",
+                            body: formData
+                        });
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.error || "Something went wrong"
+                        );
+                    }
+
+
+                    summary.innerHTML =
+                        marked.parse(data.response);
+
+                    summary.style.display = "block";
+
+
+                } catch (error) {
+
+                    summary.innerHTML =
+                        `<div class="error">
+                            ⚠ ${error.message}
+                        </div>`;
+
+                    summary.style.display = "block";
+
+                } finally {
+
+                    loading.style.display = "none";
+
+                }
+
+            };
+
+    </script>
+
+</body>
+
+</html>
+
