@@ -47,6 +47,11 @@ AI-Personal-Assistant-Flask/
 pip install flask groq python-dotenv
 python main.py
 
+how to run
+
+
+pip install flask groq python-dotenv
+python main.py
 
 then open:
 http://127.0.0.1:5000
